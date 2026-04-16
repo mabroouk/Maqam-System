@@ -54,7 +54,6 @@
 
         .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; margin-top: 8px; font-size: 13px; }
 
-        /* استعلامات الوسائط للجوال */
         @media (max-width: 900px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; border-left: none; border-bottom: 5px solid var(--accent); }
@@ -62,7 +61,6 @@
             #paper-capture { width: 100%; min-height: auto; padding: 20px; transform: scale(1); }
         }
 
-        /* تنسيق الطباعة فقط */
         @media print {
             .sidebar { display: none !important; }
             body { background: white; }
@@ -103,6 +101,9 @@
     <div class="control-box">
         <label>2. الترويسة والتحية</label>
         <input type="text" id="iRef" value="REF-2026/089" oninput="up()">
+        <label>تعديل التاريخ</label>
+        <input type="text" id="iDate" oninput="up()"> 
+        
         <input type="text" id="iTo" value="السيد / مدير دائرة الأراضي والأملاك الموقر" oninput="up()">
         <select id="iGreet" onchange="up()">
             <option>تحية طيبة وبعد،،</option>
@@ -152,7 +153,7 @@
     <div id="paper-capture">
         <div class="header-meta">
             المرجع: <span id="oRef"></span><br>
-            التاريخ: 13 أبريل 2026 م
+            التاريخ: <span id="oDate"></span>
         </div>
         
         <div class="basmala" id="oBas">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
@@ -190,12 +191,25 @@
 </main>
 
 <script>
+    // وظيفة للحصول على تاريخ اليوم بتنسيق عربي
+    function getTodayDate() {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date().toLocaleDateString('ar-EG', options) + " م";
+    }
+
+    // تعيين تاريخ اليوم عند تحميل الصفحة لأول مرة
+    window.onload = function() {
+        document.getElementById('iDate').value = getTodayDate();
+        up();
+    };
+
     function up() {
         const font = document.getElementById('iFont').value;
         document.getElementById('paper-capture').style.fontFamily = font;
         document.getElementById('oBas').style.display = document.getElementById('iShowBas').value === 'yes' ? 'block' : 'none';
 
         document.getElementById('oRef').innerText = document.getElementById('iRef').value;
+        document.getElementById('oDate').innerText = document.getElementById('iDate').value; // ربط حقل التاريخ بالورقة
         document.getElementById('oTo').innerText = document.getElementById('iTo').value;
         document.getElementById('oSub').innerText = document.getElementById('iSub').value;
         document.getElementById('oName').innerText = document.getElementById('iName').value;
@@ -248,8 +262,6 @@
         link.download = 'Document.doc';
         link.click();
     }
-
-    window.onload = up;
 </script>
 </body>
 </html>
