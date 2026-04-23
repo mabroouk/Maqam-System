@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereign Professional System v21.0</title>
+    <title>Sovereign Professional System v22.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Almarai:wght@400;700&family=Roboto:wght@400;700&family=Montserrat:wght@400;700&family=Lora:wght@400;700&family=Playfair+Display:wght@700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -12,24 +12,28 @@
         * { box-sizing: border-box; }
         body { margin: 0; display: flex; flex-direction: row; background: #64748b; min-height: 100vh; font-family: 'Cairo', sans-serif; }
         
-        /* شريط التحكم الجانبي - يختفي عند الطباعة */
+        /* شريط التحكم الجانبي */
         .sidebar { width: 400px; background: var(--admin-dark); color: white; padding: 20px; overflow-y: auto; z-index: 10; flex-shrink: 0; }
         .control-box { background: #1e293b; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #334155; }
         label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 4px; font-weight: bold; }
         input, textarea, select { width: 100%; padding: 8px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px; margin-bottom: 5px; font-family: 'Cairo'; font-size: 13px; }
         
+        .ref-container { display: flex; gap: 5px; }
+        .refresh-btn { background: #334155; border: 1px solid #475569; color: white; border-radius: 4px; cursor: pointer; padding: 0 10px; margin-bottom: 5px; }
+
         /* منطقة العمل */
         .workspace { flex-grow: 1; display: flex; justify-content: center; align-items: flex-start; padding: 40px 20px; overflow-y: auto; }
         
         /* الورقة الرسمية */
         #paper-capture {
             width: 210mm; min-height: 297mm; background: white; color: black;
-            padding: 45mm 25mm 40mm 25mm; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 25mm 25mm 40mm 25mm; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             display: flex; flex-direction: column; transition: all 0.3s ease;
         }
 
-        .header-meta { text-align: right; font-weight: bold; font-size: 12pt; margin-bottom: 20px; line-height: 1.5; }
-        .basmala { text-align: center; font-family: 'Amiri'; font-size: 24pt; margin-bottom: 25px; font-weight: 700; height: 45px; }
+        /* تعديل الترتيب: البسملة أولاً ثم الميتا */
+        .basmala { text-align: center; font-family: 'Amiri'; font-size: 24pt; margin-bottom: 15px; font-weight: 700; height: 45px; }
+        .header-meta { text-align: right; font-weight: bold; font-size: 12pt; margin-bottom: 25px; line-height: 1.5; }
         
         .subject-container { margin: 20px 0; width: 100%; }
         .sub-box { display: inline-block; padding: 10px 30px; background: #f1f5f9; border: 1px solid #cbd5e1; border-bottom: 3px double #000; font-weight: 900; font-size: 16pt; }
@@ -47,9 +51,7 @@
         .sig-job { font-size: 12pt; }
 
         .appendix-area { margin-top: 30px; }
-        .app-item { margin-bottom: 5px; font-size: 12pt; display: flex; }
-        .app-label { font-weight: bold; min-width: 90px; }
-        .list-entry { padding-right: 15px; position: relative; line-height: 1.4; }
+        .list-entry { padding-right: 15px; position: relative; line-height: 1.4; font-size: 12pt; margin-bottom: 5px; }
         .list-entry::before { content: "•"; position: absolute; right: 0; font-weight: bold; }
 
         .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; margin-top: 8px; font-size: 13px; }
@@ -72,7 +74,7 @@
 <body>
 
 <aside class="sidebar">
-    <h3 style="color:var(--accent); text-align:center; margin-bottom:15px;">لوحة تحكم الإصدار v21.0</h3>
+    <h3 style="color:var(--accent); text-align:center; margin-bottom:15px;">لوحة تحكم الإصدار v22.0</h3>
     
     <div class="control-box">
         <label>1. نوع الخط (10 خيارات)</label>
@@ -99,11 +101,17 @@
     </div>
 
     <div class="control-box">
-        <label>2. الترويسة والتحية</label>
-        <input type="text" id="iRef" value="REF-2026/089" oninput="up()">
+        <label>2. المرجع والتاريخ</label>
+        <div class="ref-container">
+            <input type="text" id="iRef" oninput="up()">
+            <button class="refresh-btn" onclick="generateRef()" title="توليد رقم فريد جديد">🔄</button>
+        </div>
         <label>تعديل التاريخ</label>
         <input type="text" id="iDate" oninput="up()"> 
-        
+    </div>
+
+    <div class="control-box">
+        <label>3. الترويسة والتحية</label>
         <input type="text" id="iTo" value="السيد / مدير دائرة الأراضي والأملاك الموقر" oninput="up()">
         <select id="iGreet" onchange="up()">
             <option>تحية طيبة وبعد،،</option>
@@ -114,7 +122,7 @@
     </div>
 
     <div class="control-box">
-        <label>3. الموضوع والنمط</label>
+        <label>4. الموضوع والنمط</label>
         <input type="text" id="iSub" value="الموضوع: طلب إخفاء الأسماء وإعادة الجدولة" oninput="up()">
         <select id="iSubStyle" onchange="up()">
             <option value="sub-box">داخل مربع رمادي</option>
@@ -128,35 +136,35 @@
     </div>
 
     <div class="control-box">
-        <label>4. محتوى الرسالة</label>
+        <label>5. محتوى الرسالة</label>
         <textarea id="iBody" rows="6" oninput="up()">نحيط سيادتكم علماً بأننا قمنا بكافة الترتيبات الفنية المطلوبة وفقاً للأنظمة المعمول بها </textarea>
     </div>
 
     <div class="control-box">
-        <label>5. المرفقات والملاحظات</label>
+        <label>6. المرفقات والملاحظات</label>
         <textarea id="iApp" rows="3" placeholder="المرفقات (كل بند في سطر)" oninput="up()"></textarea>
         <textarea id="iNote" rows="3" placeholder="الملاحظات (كل بند في سطر)" oninput="up()"></textarea>
     </div>
 
     <div class="control-box">
-        <label>6. التوقيع</label>
+        <label>7. التوقيع</label>
         <input type="text" id="iName" value="فلان بن فلان" oninput="up()">
         <input type="text" id="iJob" value="رئيس القسم الفني" oninput="up()">
     </div>
 
     <button class="btn" style="background:#10b981;" onclick="window.print()">طباعة الخطاب المباشرة</button>
-    <button class="btn" style="background:#ef4444;" onclick="exportPDF()">حفظ كـ PDF (دقة عالية)</button>
+    <button class="btn" style="background:#ef4444;" onclick="exportPDF()">حفظ كـ PDF (باسم الموضوع + المرجع)</button>
     <button class="btn" style="background:#3b82f6;" onclick="exportWord()">حفظ كـ Word (DOC)</button>
 </aside>
 
 <main class="workspace">
     <div id="paper-capture">
+        <div class="basmala" id="oBas">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+
         <div class="header-meta">
             المرجع: <span id="oRef"></span><br>
             التاريخ: <span id="oDate"></span>
         </div>
-        
-        <div class="basmala" id="oBas">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
         
         <div id="oTo" style="font-size:16pt; font-weight:bold; margin-bottom:5px;"></div>
         <div id="oGreet" style="font-size:14pt; margin-bottom:20px;"></div>
@@ -191,15 +199,27 @@
 </main>
 
 <script>
-    // وظيفة للحصول على تاريخ اليوم بتنسيق عربي
+    function generateRef() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hour = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        
+        const refCode = `REF-${year}${month}${day}/${hour}${min}`;
+        document.getElementById('iRef').value = refCode;
+        up();
+    }
+
     function getTodayDate() {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date().toLocaleDateString('ar-EG', options) + " م";
     }
 
-    // تعيين تاريخ اليوم عند تحميل الصفحة لأول مرة
     window.onload = function() {
         document.getElementById('iDate').value = getTodayDate();
+        generateRef();
         up();
     };
 
@@ -209,28 +229,24 @@
         document.getElementById('oBas').style.display = document.getElementById('iShowBas').value === 'yes' ? 'block' : 'none';
 
         document.getElementById('oRef').innerText = document.getElementById('iRef').value;
-        document.getElementById('oDate').innerText = document.getElementById('iDate').value; // ربط حقل التاريخ بالورقة
+        document.getElementById('oDate').innerText = document.getElementById('iDate').value;
         document.getElementById('oTo').innerText = document.getElementById('iTo').value;
         document.getElementById('oSub').innerText = document.getElementById('iSub').value;
         document.getElementById('oName').innerText = document.getElementById('iName').value;
         document.getElementById('oJob').innerText = document.getElementById('iJob').value;
         
-        // التحية
         const gSel = document.getElementById('iGreet');
         const gCust = document.getElementById('iGreetCust');
         if(gSel.value === 'custom') { gCust.style.display='block'; document.getElementById('oGreet').innerText = gCust.value; }
         else { gCust.style.display='none'; document.getElementById('oGreet').innerText = gSel.value; }
 
-        // الموضوع
         const subBox = document.getElementById('oSubBox');
         subBox.className = document.getElementById('iSubStyle').value;
         document.getElementById('oSubWrap').style.textAlign = document.getElementById('iSubAlign').value;
 
-        // المتن
         const bodyTxt = document.getElementById('iBody').value;
         document.getElementById('oBody').innerHTML = bodyTxt.split('\n').filter(t => t.trim()).map(p => `<p>${p}</p>`).join('');
 
-        // القوائم (مرفقات وملاحظات)
         handleList('iApp', 'oApp', 'oAppWrap');
         handleList('iNote', 'oNote', 'oNoteWrap');
     }
@@ -250,8 +266,12 @@
         const canvas = await html2canvas(document.getElementById('paper-capture'), { scale: 3, useCORS: true });
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        const refNum = document.getElementById('iRef').value.replace(/[\/\\?%*:|"<>]/g, '-');
+        const subTxt = document.getElementById('iSub').value.replace('الموضوع:', '').trim() || 'خطاب_رسمي';
+        
         pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-        pdf.save(`Doc_${Date.now()}.pdf`);
+        pdf.save(`${subTxt}_${refNum}.pdf`);
     }
 
     function exportWord() {
@@ -259,7 +279,8 @@
         const blob = new Blob(['\ufeff', `<html><head><meta charset="UTF-8"><style>body{direction:rtl; font-family:Arial; padding:40px;}</style></head><body>${content}</body></html>`], { type: 'application/msword' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = 'Document.doc';
+        const refNum = document.getElementById('iRef').value.replace(/[\/\\?%*:|"<>]/g, '-');
+        link.download = `Document_${refNum}.doc`;
         link.click();
     }
 </script>
